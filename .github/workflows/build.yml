@@ -32,7 +32,8 @@ jobs:
       - name: board
         run: |
           cp -r $GITHUB_WORKSPACE/board/LETU_S3 $HOME/micropython/ports/esp32/boards/
-          cp $GITHUB_WORKSPACE/board/LETU_S3/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
+                   cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
+
           ls $HOME/micropython/ports/esp32/boards | grep LETU
 
       - name: build
