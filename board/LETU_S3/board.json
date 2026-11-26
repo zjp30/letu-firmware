@@ -1,0 +1,11 @@
+{
+    "deploy": ["../deploy_s3.md"],
+    "docs": "",
+    "features": ["External Flash", "External RAM", "WiFi"],
+    "images": [],
+    "mcu": "esp32s3",
+    "product": "LetuRobot ESP32-S3 (N8R2)",
+    "thumbnail": "",
+    "url": "",
+    "vendor": "Letu"
+}
