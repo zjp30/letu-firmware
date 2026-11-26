@@ -33,6 +33,7 @@ jobs:
         run: |
           cp -r $GITHUB_WORKSPACE/board/LETU_S3 $HOME/micropython/ports/esp32/boards/
                    cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
+                   cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/partitions-8MiB.csv
 
           ls $HOME/micropython/ports/esp32/boards | grep LETU
 
