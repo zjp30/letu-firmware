@@ -1,0 +1,53 @@
+name: build-letu-firmware
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build python3 python3-pip python3-venv git wget curl
+
+      - name: esp-idf v5.5.1
+        run: |
+          git clone -b v5.5.1 --depth 1 https://github.com/espressif/esp-idf.git $HOME/esp-idf
+          cd $HOME/esp-idf && ./install.sh esp32s3
+
+      - name: micropython v1.27.0
+        run: |
+          git clone -b v1.27.0 --depth 1 https://github.com/micropython/micropython.git $HOME/micropython
+          cd $HOME/micropython && git submodule update --init --depth 1
+
+      - name: mpy-cross
+        run: make -C $HOME/micropython/mpy-cross -j$(nproc)
+
+      - name: board
+        run: |
+          cp -r $GITHUB_WORKSPACE/board/LETU_S3 $HOME/micropython/ports/esp32/boards/
+          cp $GITHUB_WORKSPACE/board/LETU_S3/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
+          ls $HOME/micropython/ports/esp32/boards | grep LETU
+
+      - name: build
+        run: |
+          source $HOME/esp-idf/export.sh
+          cd $HOME/micropython/ports/esp32
+          make BOARD=LETU_S3 USER_C_MODULES=$GITHUB_WORKSPACE/usermod/letu/micropython.cmake -j$(nproc)
+          ls -lh build-LETU_S3/firmware.bin
+          strings build-LETU_S3/micropython.bin | grep -x letu || (echo "letu missing" && exit 1)
+          cp build-LETU_S3/firmware.bin build-LETU_S3/Letu_S3_lib.bin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: letu-s3-firmware
+          path: |
+            /home/runner/micropython/ports/esp32/build-LETU_S3/Letu_S3_lib.bin
+            /home/runner/micropython/ports/esp32/build-LETU_S3/firmware.bin
+          if-no-files-found: error
