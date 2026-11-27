@@ -21,15 +21,10 @@ jobs:
           git clone -b v5.5.1 --depth 1 https://github.com/espressif/esp-idf.git $HOME/esp-idf
           cd $HOME/esp-idf && ./install.sh esp32s3
 
-      - name: micropython v1.27.0
-        run: |
-          git clone -b v1.27.0 --depth 1 https://github.com/micropython/micropython.git $HOME/micropython
-          cd $HOME/micropython && git submodule update --init --depth 1
-
       - name: mpy-cross
         run: make -C $HOME/micropython/mpy-cross -j$(nproc)
 
-            - name: board
+      - name: board
         run: |
           cp -r $GITHUB_WORKSPACE/board/LETU_S3 $HOME/micropython/ports/esp32/boards/
           cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
