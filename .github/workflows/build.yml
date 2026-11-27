@@ -21,8 +21,11 @@ jobs:
           git clone -b v5.5.1 --depth 1 https://github.com/espressif/esp-idf.git $HOME/esp-idf
           cd $HOME/esp-idf && ./install.sh esp32s3
 
-      - name: mpy-cross
-        run: make -C $HOME/micropython/mpy-cross -j$(nproc)
+      - name: micropython v1.27.0 and mpy-cross
+        run: |
+          git clone -b v1.27.0 --depth 1 https://github.com/micropython/micropython.git $HOME/micropython
+          cd $HOME/micropython && git submodule update --init --depth 1
+          make -C $HOME/micropython/mpy-cross -j$(nproc)
 
       - name: board
         run: |
@@ -32,7 +35,6 @@ jobs:
           sed -i '/sdkconfig.ble/d' $HOME/micropython/ports/esp32/boards/LETU_S3/mpconfigboard.cmake
           sed -i 's/^CONFIG_BT_ENABLED=.*/# CONFIG_BT_ENABLED is not set/' $HOME/micropython/ports/esp32/boards/LETU_S3/sdkconfig.board
           ls $HOME/micropython/ports/esp32/boards | grep LETU
-
 
       - name: build
         run: |
