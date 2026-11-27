@@ -29,13 +29,15 @@ jobs:
       - name: mpy-cross
         run: make -C $HOME/micropython/mpy-cross -j$(nproc)
 
-      - name: board
+            - name: board
         run: |
           cp -r $GITHUB_WORKSPACE/board/LETU_S3 $HOME/micropython/ports/esp32/boards/
-                   cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
-                   cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/partitions-8MiB.csv
-
+          cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/
+          cp $GITHUB_WORKSPACE/partitions-letu-8MiB.csv $HOME/micropython/ports/esp32/partitions-8MiB.csv
+          sed -i '/sdkconfig.ble/d' $HOME/micropython/ports/esp32/boards/LETU_S3/mpconfigboard.cmake
+          sed -i 's/^CONFIG_BT_ENABLED=.*/# CONFIG_BT_ENABLED is not set/' $HOME/micropython/ports/esp32/boards/LETU_S3/sdkconfig.board
           ls $HOME/micropython/ports/esp32/boards | grep LETU
+
 
       - name: build
         run: |
